@@ -18,7 +18,10 @@ const source = {
             return sources.find(item => item.id === existsTargetSourceItem.sourceId);
         }
 
-        let sourceMemoryItem = sourcesMemory.sort((a, b) => a.creeps.length - b.creeps.length)[0];
+        // TODO: find better way to unstuck creeps on '5bbcacba9099fc012e636191' source
+        let sourceMemoryItemId = sourcesMemory.find(item => item.sourceId === '5bbcacba9099fc012e636191').creeps.length === 0 ? '5bbcacba9099fc012e636191' : '5bbcacba9099fc012e636192';
+        let sourceMemoryItem = sourcesMemory.find(item => item.sourceId === sourceMemoryItemId);
+
         let targetSource = sources.find(source => sourceMemoryItem.sourceId === source.id);
         sourceMemoryItem.creeps.push(creep.name);
 
