@@ -2,10 +2,11 @@ const roleHarvester = require('role.harvester');
 const roleControllerSupport = require('role.controllerSupport');
 const roleBuilder = require('role.builder');
 const settings = require('settings');
-
 const roleTower = require('role.tower');
 
-module.exports.loop = () => {
+declare let Memory: any;
+
+export const loop = () => {
     if (!Memory.controller || !Memory.controller.history) {
         Memory.controller = {history: []};
     }
@@ -37,7 +38,7 @@ module.exports.loop = () => {
 
     if (builders.length < settings.builders) {
         spawn.spawnCreep(newCreepWorkerBody, `Builder${Math.ceil(Math.random() * 1000)}`, {memory: {role: 'builder'}})
-   }
+    }
 
     harvesters.map(creep => roleHarvester.run(creep));
     controllerSupports.map(creep => roleControllerSupport.run(creep));
@@ -75,15 +76,11 @@ module.exports.loop = () => {
         upControllerEtaString = `, up ETA: ${controllerLevelEta} ticks (${(controllerLevelEta / 60 / 60).toFixed(1)}h)`;
     }
 
-    if (structuresMemory.history.length > 1) {
-        if (structuresMemory.history[0].damageToRepair - structuresMemory.history[structuresMemory.history.length - 1].damageToRepair < 0) {
-            structuresMemory.history = [];
-        } else {
-            let repairProgress = structuresMemory.history[0].damageToRepair - structuresMemory.history[structuresMemory.history.length - 1].damageToRepair;
-            let repairEta = Math.floor((totalDamageToRepair / repairProgress) * (ticksIntervalToStore * structuresMemory.history.length));
+    if (structuresMemory.history.length > 0) {
+        let repairProgress = structuresMemory.history[0].damageToRepair - structuresMemory.history[structuresMemory.history.length - 1].damageToRepair;
+        let repairEta = Math.floor((totalDamageToRepair / repairProgress) * (ticksIntervalToStore * structuresMemory.history.length));
 
-            damageRepairEtaString = `, ETA: ${repairEta} ticks (${(repairEta / 60 / 60).toFixed(1)}h)`;
-        }
+        damageRepairEtaString = `, ETA: ${repairEta} ticks (${(repairEta / 60 / 60).toFixed(1)}h)`;
     }
 
     let infoTitle = `Room info`;
