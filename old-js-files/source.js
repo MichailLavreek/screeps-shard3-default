@@ -1,0 +1,64 @@
+const source = {
+    /** @param {Creep} creep */
+    getSourceForMining: (creep) => {
+        let sources = Game.spawns['Spawn1'].room.find(FIND_SOURCES);
+        let sourcesMemory = Memory.sources;
+
+        if (sources.length === 1) {
+            return sources[0];
+        }
+
+        if (!sourcesMemory) {
+            sourcesMemory = sources.map(source => {return {sourceId: source.id, creeps: []}});
+        }
+
+        let existsTargetSourceItem = sourcesMemory.find(item => item.creeps.includes(creep.name));
+
+        if (existsTargetSourceItem) {
+            return sources.find(item => item.id === existsTargetSourceItem.sourceId);
+        }
+
+        let sourceMemoryItem = sourcesMemory.sort((a, b) => a.creeps.length - b.creeps.length)[0];
+        let targetSource = sources.find(source => sourceMemoryItem.sourceId === source.id);
+        sourceMemoryItem.creeps.push(creep.name);
+
+        Memory.sources = sourcesMemory;
+
+        return targetSource;
+    },
+
+    /** @param {Creep} creep */
+    harvest: (creep) => {
+        let targetSource = source.getSourceForMining(creep);
+
+        if (creep.harvest(targetSource) === ERR_NOT_IN_RANGE) {
+            creep.moveTo(targetSource);
+        }
+    },
+
+    /** @param {Creep} creep */
+    stopHarvest: (creep) => {
+        source.clearMemoryFromNotExistsCreeps();
+
+        if (!Memory.sources) {
+            return;
+        }
+
+        Memory
+            .sources
+            .filter(item => item.creeps.includes(creep.name))
+            .map(item => item.creeps.splice(item.creeps.indexOf(creep.name), 1));
+    },
+
+    clearMemoryFromNotExistsCreeps: () => {
+        let existsCreepNames = Object.keys(Game.creeps);
+
+        Memory
+            .sources
+            .map(sourceItem => sourceItem.creeps
+                .filter(item => !existsCreepNames.includes(item))
+                .map(item => sourceItem.creeps.splice(sourceItem.creeps.indexOf(item), 1)));
+    }
+};
+
+module.exports = source;
