@@ -4,6 +4,7 @@ const roleBuilder = require('role.builder');
 const settings = require('settings');
 
 const roleTower = require('role.tower');
+const staticHarvesters = require('role.staticHarvesters');
 
 module.exports.loop = () => {
     if (!Memory.controller || !Memory.controller.history) {
@@ -40,6 +41,7 @@ module.exports.loop = () => {
    }
 
     harvesters.map(creep => roleHarvester.run(creep));
+    // staticHarvesters.run(harvesters);
     controllerSupports.map(creep => roleControllerSupport.run(creep));
     builders.map(creep => roleBuilder.run(creep));
 
