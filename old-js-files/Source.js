@@ -1,4 +1,4 @@
-const source = {
+const Source = {
     /** @param {Creep} creep */
     getSourceForMining: (creep) => {
         let sources = Game.spawns['Spawn1'].room.find(FIND_SOURCES);
@@ -32,7 +32,7 @@ const source = {
 
     /** @param {Creep} creep */
     harvest: (creep) => {
-        let targetSource = source.getSourceForMining(creep);
+        let targetSource = Source.getSourceForMining(creep);
 
         if (creep.harvest(targetSource) === ERR_NOT_IN_RANGE) {
             creep.moveTo(targetSource);
@@ -41,7 +41,7 @@ const source = {
 
     /** @param {Creep} creep */
     stopHarvest: (creep) => {
-        source.clearMemoryFromNotExistsCreeps();
+        Source.clearMemoryFromNotExistsCreeps();
 
         if (!Memory.sources) {
             return;
@@ -64,4 +64,4 @@ const source = {
     }
 };
 
-module.exports = source;
+module.exports = Source;
